@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Signup</title>
+  <link rel="stylesheet" href="assets/css/signupstyle.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+    }
+    .wrapper {
+      max-width: 500px;
+      margin: 5vh auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1rem;
+    }
+    #error-message {
+      color: red;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h2>Student Signup</h2>
+    <p id="error-message"></p>
+    <form id="student-form">
+      <input type="text" id="fullname" placeholder="Full Name" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="text" id="phone" placeholder="Phone Number" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="repeat-password" placeholder="Repeat Password" required />
+      <button type="submit">Signup</button>
+    </form>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </div>
+
+  <script>
+    document.getElementById('student-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fullname = document.getElementById('fullname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const repeatPassword = document.getElementById('repeat-password').value;
+      const errorMsg = document.getElementById('error-message');
+
+      if (!fullname || !email || !phone || !password || !repeatPassword) {
+        errorMsg.textContent = "Please fill in all fields.";
+        return;
+      }
+
+      if (password !== repeatPassword) {
+        errorMsg.textContent = "Passwords do not match.";
+        return;
+      }
+
+      try {
+        const res = await fetch("https://campus-connect-hmkx.onrender.com/student/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ student_name:fullname, password: password,phone_number: phone ,email:email})
+        });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message || "Signup failed.");
+        alert("Signup successful! Redirecting to login...");
+        window.location.href = "login.html";
+      } catch (err) {
+        errorMsg.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>
